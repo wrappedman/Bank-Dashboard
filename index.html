@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3f6fd">
+  <meta name="description" content="پیشخوان بانکی فارسی - مدیریت کارت‌های بانکی و انجام عملیات بانکداری وب، بهینه‌شده برای کیوسک لمسی">
+  <title>پیشخوان بانکی | مدیریت کارت و عملیات بانکی</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/fonts/icons.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <a class="skip-link" href="#viewRoot">پرش به محتوای اصلی</a>
+
+  <div class="app-container" id="app">
+    <!-- ===== نوار بالا ===== -->
+    <header class="app-header">
+      <div class="app-header-right">
+        <button class="app-icon" id="navToggle" type="button" aria-label="باز کردن منوی ناوبری" aria-expanded="false" aria-controls="sidebar">
+          <span></span>
+        </button>
+        <a class="brand" href="#dashboard" data-view="dashboard" aria-label="رفتن به داشبورد">
+          <span class="brand-mark"><i class="ic ic-building-columns" aria-hidden="true"></i></span>
+          <p class="app-name">پیشخوان<span>بانکی</span></p>
+        </a>
+        <div class="search-wrapper">
+          <input class="search-input" id="globalSearch" type="search" autocomplete="off" placeholder="جستجوی عملیات، کارت یا تراکنش…" aria-label="جستجوی سراسری">
+          <i class="ic ic-magnifying-glass" aria-hidden="true"></i>
+          <kbd class="search-hint">Ctrl + K</kbd>
+        </div>
+      </div>
+
+      <div class="app-header-left">
+        <span class="demo-chip" id="demoChip" title="در حالت آزمایشی هیچ تراکنش واقعی انجام نمی‌شود">
+          <i class="ic ic-flask" aria-hidden="true"></i> نسخهٔ آزمایشی
+        </span>
+        <button class="icon-btn mode-switch" id="themeToggle" type="button" title="تغییر تم" aria-label="تغییر تم روشن و تاریک">
+          <i class="ic ic-moon" aria-hidden="true"></i>
+        </button>
+        <button class="add-btn" id="quickAdd" type="button" title="افزودن کارت بانکی" aria-label="افزودن کارت بانکی">
+          <i class="ic ic-plus" aria-hidden="true"></i>
+        </button>
+        <button class="icon-btn notification-btn" id="notifyToggle" type="button" title="اعلان‌ها" aria-label="نمایش اعلان‌ها" aria-expanded="false">
+          <i class="ic ic-bell" aria-hidden="true"></i>
+          <span class="badge-count" id="notifyBadge">۰</span>
+        </button>
+
+        <div class="profile-wrap">
+          <button class="profile-btn" id="profileBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="profileMenu">
+            <img id="headerAvatar" src="./assets/avatar.svg" alt="تصویر نمایهٔ کاربر">
+            <span class="profile-name" id="headerName">علی محمدی</span>
+            <i class="ic ic-chevron-down" aria-hidden="true"></i>
+          </button>
+          <!-- منوی کاربر: با کلیک روی عکس/نام باز می‌شود -->
+          <div class="profile-menu" id="profileMenu" role="menu" hidden>
+            <div class="profile-menu-head">
+              <img src="./assets/avatar.svg" alt="">
+              <div>
+                <strong id="menuName">علی محمدی</strong>
+                <small>حساب شخصی · سطح طلایی</small>
+              </div>
+            </div>
+            <button type="button" role="menuitem" data-view="profile"><i class="ic ic-user" aria-hidden="true"></i><span>صفحهٔ پروفایل</span><i class="ic ic-angle-left menu-arrow" aria-hidden="true"></i></button>
+            <button type="button" role="menuitem" data-view="settings"><i class="ic ic-gear" aria-hidden="true"></i><span>تنظیمات</span><i class="ic ic-angle-left menu-arrow" aria-hidden="true"></i></button>
+            <button type="button" role="menuitem" id="lockBtn"><i class="ic ic-lock" aria-hidden="true"></i><span>قفل کردن صفحه</span><i class="ic ic-angle-left menu-arrow" aria-hidden="true"></i></button>
+            <div class="menu-sep" role="separator"></div>
+            <button type="button" role="menuitem" class="danger" id="logoutBtn"><i class="ic ic-arrow-right-from-bracket" aria-hidden="true"></i><span>خروج از حساب</span><i class="ic ic-angle-left menu-arrow" aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <button class="messages-btn" id="sidePanelBtn" type="button" aria-label="نمایش اعلان‌ها و فعالیت‌ها" aria-controls="sidePanel" aria-expanded="false">
+        <i class="ic ic-message" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <!-- ===== بدنه ===== -->
+    <div class="app-content">
+      <nav class="app-sidebar" id="sidebar" aria-label="منوی اصلی">
+        <a class="app-sidebar-link active" href="#dashboard" data-view="dashboard" title="داشبورد"><i class="ic ic-house" aria-hidden="true"></i><span class="nav-tooltip">داشبورد</span></a>
+        <a class="app-sidebar-link" href="#cards" data-view="cards" title="کارت‌های من"><i class="ic ic-credit-card" aria-hidden="true"></i><span class="nav-tooltip">کارت‌های من</span></a>
+        <a class="app-sidebar-link" href="#operations" data-view="operations" title="عملیات بانکی"><i class="ic ic-arrow-right-arrow-left" aria-hidden="true"></i><span class="nav-tooltip">عملیات بانکی</span></a>
+        <a class="app-sidebar-link" href="#statement" data-view="statement" title="گردش حساب"><i class="ic ic-receipt" aria-hidden="true"></i><span class="nav-tooltip">گردش حساب</span></a>
+        <a class="app-sidebar-link" href="#settings" data-view="settings" title="تنظیمات"><i class="ic ic-gear" aria-hidden="true"></i><span class="nav-tooltip">تنظیمات</span></a>
+        <a class="app-sidebar-link" href="#support" data-view="support" title="پشتیبانی"><i class="ic ic-headset" aria-hidden="true"></i><span class="nav-tooltip">پشتیبانی</span></a>
+        <div class="sidebar-spacer"></div>
+        <button class="app-sidebar-link sidebar-logout" id="sidebarLogout" type="button" title="خروج"><i class="ic ic-power-off" aria-hidden="true"></i><span class="nav-tooltip">خروج</span></button>
+      </nav>
+
+      <main class="projects-section" id="mainPanel">
+        <div class="projects-section-header">
+          <div class="page-heading">
+            <p id="pageTitle">عملیات بانکی</p>
+            <span class="page-subtitle" id="pageSubtitle">خدمات پرکاربرد خود را انتخاب کنید</span>
+          </div>
+          <div class="header-meta">
+            <p class="time" id="pageDate">—</p>
+            <div class="page-tools" id="pageTools"></div>
+          </div>
+        </div>
+        <div class="view-root" id="viewRoot" tabindex="-1"></div>
+      </main>
+
+      <aside class="messages-section" id="sidePanel" aria-label="اعلان‌ها و فعالیت‌های اخیر">
+        <button class="messages-close" id="sidePanelClose" type="button" aria-label="بستن پنل اعلان‌ها"><i class="ic ic-xmark" aria-hidden="true"></i></button>
+        <div class="projects-section-header side-header">
+          <p>اعلان‌ها و فعالیت‌ها</p>
+          <button class="text-btn" id="markAllRead" type="button">خواندن همه</button>
+        </div>
+        <div class="messages" id="notificationsList"></div>
+        <div class="side-summary" id="sideSummary"></div>
+      </aside>
+    </div>
+
+    <!-- ===== ناوبری پایین برای موبایل/تبلت ===== -->
+    <nav class="bottom-nav" id="bottomNav" aria-label="ناوبری سریع">
+      <button type="button" data-view="dashboard" class="active"><i class="ic ic-house" aria-hidden="true"></i><span>خانه</span></button>
+      <button type="button" data-view="cards"><i class="ic ic-credit-card" aria-hidden="true"></i><span>کارت‌ها</span></button>
+      <button type="button" data-view="transfer" class="bottom-primary"><i class="ic ic-arrow-right-arrow-left" aria-hidden="true"></i><span>انتقال</span></button>
+      <button type="button" data-view="statement"><i class="ic ic-receipt" aria-hidden="true"></i><span>تراکنش‌ها</span></button>
+      <button type="button" id="bottomMore"><i class="ic ic-bars" aria-hidden="true"></i><span>بیشتر</span></button>
+    </nav>
+  </div>
+
+  <!-- ===== لایه‌های رابط ===== -->
+  <div class="modal-root" id="modalRoot" hidden></div>
+  <div class="window-root" id="operationWindowRoot" hidden></div>
+  <div class="toast-stack" id="toastStack" role="status" aria-live="polite"></div>
+  <div class="keypad-root" id="keypadRoot" hidden></div>
+  <div class="lock-root" id="lockRoot" hidden></div>
+  <div class="print-area" id="printArea" aria-hidden="true"></div>
+
+  <script src="./data.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>

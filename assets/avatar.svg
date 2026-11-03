@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="تصویر نمونه کاربر">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d5deff"/>
+      <stop offset="1" stop-color="#e9e7fd"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f3ff0"/>
+      <stop offset="1" stop-color="#7a68ff"/>
+    </linearGradient>
+    <clipPath id="round"><circle cx="64" cy="64" r="64"/></clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <rect width="128" height="128" fill="url(#bg)"/>
+    <circle cx="64" cy="128" r="70" fill="#fff" opacity=".45"/>
+    <path d="M14 132c4-27 23-42 50-42s46 15 50 42z" fill="url(#shirt)"/>
+    <path d="M56 90h16v16a8 8 0 0 1-16 0z" fill="#e9b89a"/>
+    <path d="M56 92l8 12 8-12-5-3h-6z" fill="#fff" opacity=".9"/>
+    <ellipse cx="64" cy="60" rx="25" ry="29" fill="#f0c3a5"/>
+    <path d="M39 58c-1-18 9-30 25-30 15 0 26 11 25 30-3-3-6-6-8-11-7 7-20 9-31 6-4 3-7 4-11 5z" fill="#2b2540"/>
+    <path d="M41 55c-4 0-6 4-5 9s4 7 7 6zM87 55c4 0 6 4 5 9s-4 7-7 6z" fill="#e9b89a"/>
+    <circle cx="55" cy="61" r="2.3" fill="#2b2540"/>
+    <circle cx="73" cy="61" r="2.3" fill="#2b2540"/>
+    <path d="M58 74c3 3 9 3 12 0" fill="none" stroke="#b8755c" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+</svg>
