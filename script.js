@@ -11,6 +11,10 @@
   var STORAGE_KEY = 'bank_dashboard_state_v1';
   var PIN_DEMO = '1234';
   var DAILY_LIMIT = 500000000; /* ریال */
+  var operationWindowView = null;
+  var operationWindowMaximized = false;
+  var operationWindowRestoreStyle = null;
+  var operationWindowDrag = null;
 
   /* ------------------------- ابزارها ------------------------- */
   function $(sel, root) { return (root || document).querySelector(sel); }
@@ -548,6 +552,87 @@
       el.classList.toggle('active', el.dataset.view === group);
     });
   }
+  function operationViewOutput(view) {
+    if (view && view.indexOf('service:') === 0) return viewService(view.slice(8));
+    var renderer = VIEWS[view];
+    return renderer ? renderer() : null;
+  }
+  function renderOperationWindow(view, updateOnly) {
+    var root = $('#operationWindowRoot');
+    var out = operationViewOutput(view);
+    if (!root || !out) return;
+    if (updateOnly && $('.operation-window', root)) {
+      $('.window-title', root).textContent = out.title;
+      $('.window-subtitle', root).textContent = out.subtitle || '';
+      $('.window-tools', root).innerHTML = out.tools || '';
+      $('.window-content', root).innerHTML = out.body || '';
+      return;
+    }
+    root.className = 'window-root';
+    root.innerHTML = '<section class="operation-window" role="dialog" aria-modal="false" aria-label="' + esc(out.title) + '">' +
+      '<header class="window-titlebar" data-window-drag-handle>' +
+      '<div class="window-heading"><span class="window-heading-icon">' + ic('layer-group') + '</span><div><strong class="window-title">' + esc(out.title) + '</strong><small class="window-subtitle">' + esc(out.subtitle || '') + '</small></div></div>' +
+      '<div class="window-controls">' +
+      '<button class="window-control" type="button" data-action="window-minimize" aria-label="کمینه کردن پنجره" title="کمینه کردن">' + ic('minus') + '</button>' +
+      '<button class="window-control" type="button" data-action="window-maximize" aria-label="بیشینه کردن پنجره" aria-pressed="false" title="بیشینه کردن">' + ic('expand') + '</button>' +
+      '<button class="window-control window-control-close" type="button" data-action="window-close" aria-label="بستن پنجره" title="بستن">' + ic('xmark') + '</button>' +
+      '</div></header>' +
+      '<div class="window-toolbar window-tools">' + (out.tools || '') + '</div>' +
+      '<div class="window-content">' + (out.body || '') + '</div></section>';
+    root.hidden = false;
+  }
+  function openOperationWindow(view) {
+    if (!operationViewOutput(view)) { navigate(view); return; }
+    operationWindowView = view;
+    operationWindowMaximized = false;
+    operationWindowRestoreStyle = null;
+    var root = $('#operationWindowRoot');
+    root.hidden = false;
+    root.className = 'window-root';
+    renderOperationWindow(view, false);
+    resetIdle();
+  }
+  function closeOperationWindow() {
+    var root = $('#operationWindowRoot');
+    if (root) { root.hidden = true; root.innerHTML = ''; root.className = 'window-root'; }
+    operationWindowView = null;
+    operationWindowMaximized = false;
+    operationWindowRestoreStyle = null;
+    operationWindowDrag = null;
+    if ($('#keypadRoot') && !$('#keypadRoot').hidden) hideKeypad();
+  }
+  function toggleOperationWindowMinimize() {
+    var win = $('.operation-window', $('#operationWindowRoot'));
+    if (!win) return;
+    var minimized = win.classList.toggle('is-minimized');
+    var button = $('[data-action="window-minimize"]', win);
+    if (button) {
+      button.setAttribute('aria-label', minimized ? 'بازگردانی پنجره' : 'کمینه کردن پنجره');
+      button.title = minimized ? 'بازگردانی' : 'کمینه کردن';
+      button.innerHTML = ic(minimized ? 'expand' : 'minus');
+    }
+  }
+  function toggleOperationWindowMaximize() {
+    var win = $('.operation-window', $('#operationWindowRoot'));
+    if (!win) return;
+    win.classList.remove('is-minimized');
+    var minButton = $('[data-action="window-minimize"]', win);
+    if (minButton) { minButton.setAttribute('aria-label', 'کمینه کردن پنجره'); minButton.title = 'کمینه کردن'; minButton.innerHTML = ic('minus'); }
+    var button = $('[data-action="window-maximize"]', win);
+    if (!operationWindowMaximized) {
+      operationWindowRestoreStyle = { left: win.style.left, top: win.style.top, right: win.style.right, bottom: win.style.bottom, width: win.style.width, height: win.style.height, transform: win.style.transform };
+      win.classList.add('is-maximized');
+      win.classList.remove('is-minimized');
+      win.style.left = win.style.top = win.style.right = win.style.bottom = win.style.width = win.style.height = win.style.transform = '';
+      if (button) { button.setAttribute('aria-pressed', 'true'); button.setAttribute('aria-label', 'بازگردانی اندازهٔ پنجره'); button.title = 'بازگردانی'; button.innerHTML = ic('expand'); }
+      operationWindowMaximized = true;
+    } else {
+      win.classList.remove('is-maximized');
+      if (operationWindowRestoreStyle) Object.keys(operationWindowRestoreStyle).forEach(function (key) { win.style[key] = operationWindowRestoreStyle[key]; });
+      if (button) { button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-label', 'بیشینه کردن پنجره'); button.title = 'بیشینه کردن'; button.innerHTML = ic('expand'); }
+      operationWindowMaximized = false;
+    }
+  }
   function navigate(view) {
     if (!view) return;
     if (view.indexOf('service:') === 0) state.session.serviceKey = view.slice(8);
@@ -574,6 +659,7 @@
     updateNav(view);
     renderNotifications();
     renderSideSummary();
+    if (operationWindowView && !$('#operationWindowRoot').hidden) renderOperationWindow(operationWindowView, true);
     if (state.session.apiStatus && $('#apiStatus')) {
       var r = state.session.apiStatus;
       $('#apiStatus').className = 'api-status ' + (r.ok ? 'ok' : 'error');
@@ -889,7 +975,10 @@
   function finishReceipt(data) {
     state.session.receipt = data;
     closeModal();
-    navigate('receipt');
+    if (operationWindowView) {
+      operationWindowView = 'receipt';
+      renderOperationWindow('receipt', true);
+    } else navigate('receipt');
     toast('عملیات با موفقیت انجام شد', 'شماره پیگیری: ' + data.ref, 'success');
   }
   function validateAmount(form, name) {
@@ -1590,8 +1679,12 @@
             '<div class="receipt-row"><span>سهم استفاده</span><strong>٪' + toFa(op.share) + '</strong></div>' +
             '<div class="receipt-row"><span>وضعیت</span><strong>فعال (نسخهٔ آزمایشی)</strong></div></div>',
           foot: '<button class="btn btn-outline" type="button" data-action="close-modal">بستن</button>' +
-            '<button class="btn btn-primary" type="button" data-view="' + esc(op.view) + '">انجام عملیات</button>'
+            '<button class="btn btn-primary" type="button" data-action="op-open" data-id="' + esc(op.id) + '">انجام عملیات</button>'
         });
+        break;
+      case 'op-open':
+        var targetOp = D.OPERATIONS.filter(function (o) { return o.id === id; })[0];
+        if (targetOp) { closeModal(); openOperationWindow(targetOp.view); }
         break;
       case 'card-default':
         state.cards.forEach(function (c) { c.isDefault = c.id === id; });
@@ -1665,6 +1758,9 @@
       case 'fullscreen': fullscreen(); break;
       case 'keypad-close': hideKeypad(); break;
       case 'close-modal': closeModal(); break;
+      case 'window-close': closeOperationWindow(); break;
+      case 'window-minimize': toggleOperationWindowMinimize(); break;
+      case 'window-maximize': toggleOperationWindowMaximize(); break;
       case 'modal-confirm':
         if (typeof state.session.modalConfirm === 'function') state.session.modalConfirm();
         break;
@@ -1678,13 +1774,46 @@
     ['#sidePanelBtn', '#notifyToggle'].forEach(function (s) { $(s).setAttribute('aria-expanded', show ? 'true' : 'false'); });
   }
   function bindEvents() {
+    document.addEventListener('pointerdown', function (e) {
+      var handle = e.target.closest && e.target.closest('[data-window-drag-handle]');
+      var win = $('.operation-window', $('#operationWindowRoot'));
+      if (!handle || e.target.closest('button') || !win || operationWindowMaximized || win.classList.contains('is-minimized')) return;
+      var rect = win.getBoundingClientRect();
+      operationWindowDrag = { pointerId: e.pointerId, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top };
+      win.style.left = rect.left + 'px'; win.style.top = rect.top + 'px';
+      win.style.right = 'auto'; win.style.bottom = 'auto'; win.style.transform = 'none';
+      document.body.classList.add('window-dragging');
+      e.preventDefault();
+    });
+    document.addEventListener('pointermove', function (e) {
+      if (!operationWindowDrag || e.pointerId !== operationWindowDrag.pointerId) return;
+      var win = $('.operation-window', $('#operationWindowRoot'));
+      if (!win) return;
+      var rect = win.getBoundingClientRect();
+      var left = Math.max(0, Math.min(window.innerWidth - rect.width, e.clientX - operationWindowDrag.offsetX));
+      var top = Math.max(0, Math.min(window.innerHeight - Math.min(rect.height, 72), e.clientY - operationWindowDrag.offsetY));
+      win.style.left = left + 'px'; win.style.top = top + 'px';
+    });
+    function stopWindowDrag(e) {
+      if (operationWindowDrag && (!e || e.pointerId === operationWindowDrag.pointerId)) {
+        operationWindowDrag = null;
+        document.body.classList.remove('window-dragging');
+      }
+    }
+    document.addEventListener('pointerup', stopWindowDrag);
+    document.addEventListener('pointercancel', stopWindowDrag);
     document.addEventListener('click', function (e) {
       var actionEl = e.target.closest('[data-action]');
       if (actionEl) { handleAction(actionEl.dataset.action, actionEl, e); return; }
       var key = e.target.closest('[data-key]');
       if (key) { keypadPress(key.dataset.key); return; }
       var nav = e.target.closest('[data-view]');
-      if (nav) { e.preventDefault(); navigate(nav.dataset.view); return; }
+      if (nav) {
+        e.preventDefault();
+        if (nav.closest('#operationWindowRoot') || nav.closest('.project-box')) openOperationWindow(nav.dataset.view);
+        else navigate(nav.dataset.view);
+        return;
+      }
       if (!e.target.closest('.profile-wrap')) {
         $('#profileMenu').hidden = true; $('#profileBtn').setAttribute('aria-expanded', 'false');
       }
@@ -1815,11 +1944,12 @@
       if (e.key === 'Escape') {
         if (!$('#modalRoot').hidden) { closeModal(); return; }
         if (!$('#keypadRoot').hidden) { hideKeypad(); return; }
+        if (!$('#operationWindowRoot').hidden) { closeOperationWindow(); return; }
         closeMenus(); $('#sidePanel').classList.remove('show');
         return;
       }
       if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.project-box[data-view]')) {
-        e.preventDefault(); navigate(e.target.dataset.view);
+        e.preventDefault(); openOperationWindow(e.target.dataset.view);
       }
     });
 
