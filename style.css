@@ -506,9 +506,12 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
 .switch { position: relative; width: 50px; height: 28px; flex: 0 0 50px; }
 .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; z-index: 2; cursor: pointer; }
 .switch span { position: absolute; inset: 0; border-radius: 20px; background: var(--border); transition: .2s; }
-.switch span::after { content: ""; position: absolute; top: 3px; inset-inline-end: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.2); transition: .2s; }
+.switch span::after { content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.2); transition: transform .2s; }
 .switch input:checked + span { background: var(--brand); }
-.switch input:checked + span::after { transform: translateX(-22px); }
+/* جهت حرکت کلید با جهت نوشتار هماهنگ است؛ در RTL گوی از راست به چپ می‌رود. */
+:dir(rtl) .switch input:checked + span::after { transform: translateX(-22px); }
+:dir(ltr) .switch input:checked + span::after { transform: translateX(22px); }
+.switch input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--brand) 35%, transparent); outline-offset: 3px; }
 .segmented { display: inline-flex; padding: 4px; background: var(--surface-alt); border-radius: 12px; gap: 4px; }
 .segmented button { min-height: 36px; padding: 6px 14px; border: 0; background: transparent; border-radius: 9px; font-size: 12px; font-weight: 700; color: var(--secondary-color); }
 .segmented button.active { background: var(--brand); color: #fff; }
