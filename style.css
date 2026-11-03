@@ -406,6 +406,8 @@ html.dark .project-box { color: #2a2733; filter: saturate(.85) brightness(.88); 
 .op-tag .ic { font-size: 10px; }
 .op-tag.solid { background: var(--card-accent); color: #fff; }
 .more-wrapper { position: relative; flex: 0 0 auto; }
+/* کارتی که منوی ⋯ آن باز است بالاتر از کارت‌های دیگر قرار می‌گیرد تا منو زیر کارت بعدی بریده نشود */
+.project-box-wrapper.menu-open { position: relative; z-index: 40; }
 .project-btn-more { width: 30px; height: 30px; border: 0; border-radius: 10px; background: rgba(255,255,255,.55); color: #2a2733; display: grid; place-items: center; font-size: 15px; }
 .project-btn-more:hover { background: #fff; }
 .more-menu { position: absolute; top: calc(100% + 6px); inset-inline-end: 0; width: 176px; z-index: 12; background: var(--more-list-bg); border-radius: 12px; box-shadow: var(--shadow-pop); padding: 6px; border: 1px solid var(--border); }

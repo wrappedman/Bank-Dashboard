@@ -540,10 +540,14 @@
     transfer: 'operations', remittance: 'operations', bills: 'operations', topup: 'operations',
     statement: 'statement', receipt: 'operations', settings: 'settings', profile: 'settings', support: 'settings'
   };
+  function closeMoreMenus() {
+    $$('.more-menu').forEach(function (m) { m.hidden = true; });
+    $$('.menu-open').forEach(function (w) { w.classList.remove('menu-open'); });
+  }
   function closeMenus() {
     var menu = $('#profileMenu'); if (menu) menu.hidden = true;
     var pb = $('#profileBtn'); if (pb) pb.setAttribute('aria-expanded', 'false');
-    $$('.more-menu').forEach(function (m) { m.hidden = true; });
+    closeMoreMenus();
     var sidebar = $('#sidebar'); if (sidebar) sidebar.classList.remove('open');
     var navToggle = $('#navToggle'); if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
   }
@@ -1694,8 +1698,12 @@
         e.stopPropagation();
         var menu = $('.more-menu', el.parentNode);
         var willShow = menu.hidden;
-        $$('.more-menu').forEach(function (m) { m.hidden = true; });
+        closeMoreMenus();
         menu.hidden = !willShow;
+        if (!menu.hidden) {
+          var menuHost = el.closest('.project-box-wrapper') || el.closest('.project-box');
+          if (menuHost) menuHost.classList.add('menu-open'); /* کارتِ منوی باز بالاتر از بقیهٔ کارت‌ها قرار گیرد تا منو بریده نشود */
+        }
         break;
       case 'op-info':
         var op = D.OPERATIONS.filter(function (o) { return o.id === id; })[0];
@@ -1867,7 +1875,7 @@
       if (!e.target.closest('.profile-wrap')) {
         $('#profileMenu').hidden = true; $('#profileBtn').setAttribute('aria-expanded', 'false');
       }
-      if (!e.target.closest('.more-wrapper')) $$('.more-menu').forEach(function (m) { m.hidden = true; });
+      if (!e.target.closest('.more-wrapper')) closeMoreMenus();
       if (!e.target.closest('#sidebar') && !e.target.closest('#navToggle') && !e.target.closest('#bottomMore')) {
         $('#sidebar').classList.remove('open'); $('#navToggle').setAttribute('aria-expanded', 'false');
       }
