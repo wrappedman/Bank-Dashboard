@@ -1656,8 +1656,7 @@
       case 'toggle-panel':
         togglePanel(); break;
       case 'close-panel':
-        $('#sidePanel').classList.remove('show');
-        ['#sidePanelBtn', '#notifyToggle'].forEach(function (s) { $(s).setAttribute('aria-expanded', 'false'); });
+        setPanel(false);
         break;
       case 'mark-read':
         state.notifications.forEach(function (n) { n.unread = false; }); persist(); renderNotifications(); toast('اعلان\u200cها خوانده شدند', '', 'success'); break;
@@ -1804,12 +1803,20 @@
       default: break;
     }
   }
-  function togglePanel() {
+  function panelIsMobile() { return !!(window.matchMedia && window.matchMedia('(max-width: 980px)').matches); }
+  function panelIsOpen() {
     var panelEl = $('#sidePanel');
-    var show = !panelEl.classList.contains('show');
-    panelEl.classList.toggle('show', show);
-    ['#sidePanelBtn', '#notifyToggle'].forEach(function (s) { $(s).setAttribute('aria-expanded', show ? 'true' : 'false'); });
+    if (!panelEl) return false;
+    return panelIsMobile() ? panelEl.classList.contains('show') : !panelEl.classList.contains('panel-hidden');
   }
+  function setPanel(open) {
+    var panelEl = $('#sidePanel');
+    if (!panelEl) return;
+    if (panelIsMobile()) { panelEl.classList.toggle('show', !!open); panelEl.classList.remove('panel-hidden'); }
+    else { panelEl.classList.toggle('panel-hidden', !open); panelEl.classList.remove('show'); } /* دسکتاپ: با کلاس panel-hidden مخفی می‌شود */
+    ['#sidePanelBtn', '#notifyToggle'].forEach(function (s) { var b = $(s); if (b) b.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+  }
+  function togglePanel() { setPanel(!panelIsOpen()); }
   function bindEvents() {
     document.addEventListener('pointerdown', function (e) {
       var winEl = e.target.closest && e.target.closest('.operation-window');
@@ -1893,6 +1900,8 @@
     $('#sidePanelBtn').addEventListener('click', togglePanel);
     $('#sidePanelClose').addEventListener('click', function () { handleAction('close-panel', this, null); });
     $('#markAllRead').addEventListener('click', function () { handleAction('mark-read', this, null); });
+    setPanel(panelIsOpen()); /* همگام‌سازی aria-expanded با وضعیت فعلی پنل */
+    window.addEventListener('resize', function () { setPanel(panelIsOpen()); });
     $('#lockBtn').addEventListener('click', function () { $('#profileMenu').hidden = true; showLock('lock'); });
     $('#logoutBtn').addEventListener('click', function () { $('#profileMenu').hidden = true; handleAction('logout', this, null); });
     $('#sidebarLogout').addEventListener('click', function () { handleAction('logout', this, null); });
@@ -2004,7 +2013,7 @@
         if (!$('#modalRoot').hidden) { closeModal(); return; }
         if (!$('#keypadRoot').hidden) { hideKeypad(); return; }
         if (!$('#operationWindowRoot').hidden) { if (windows.length) closeWindow(windows[windows.length - 1]); return; }
-        closeMenus(); $('#sidePanel').classList.remove('show');
+        closeMenus(); setPanel(false);
         return;
       }
       if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.project-box[data-view]')) {
