@@ -486,7 +486,7 @@
     } else if (o.type === 'textarea') {
       control = '<textarea ' + common + ' rows="2">' + esc(o.value || '') + '</textarea>';
     } else if (o.type === 'amount') {
-      control = '<div class="input-wrap"><input ' + common + ' type="text" inputmode="numeric" data-format="amount" value="' + esc(o.value || '') + '"><span class="input-suffix">ریال</span></div>' + amountQuickChips();
+      control = '<div class="input-wrap amount-wrap" dir="ltr"><input ' + common + ' type="text" inputmode="numeric" data-format="amount" value="' + esc(o.value || '') + '"><span class="input-suffix" dir="rtl">ریال</span></div>' + amountQuickChips();
     } else {
       var t = o.type === 'pin' ? 'password' : (o.type === 'tel' ? 'tel' : 'text');
       var extra = o.format === 'card' ? ' data-format="card" inputmode="numeric"' : '';

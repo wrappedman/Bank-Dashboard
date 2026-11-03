@@ -145,7 +145,9 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .rtl-flip { display: inline-block; transform: scaleX(-1); }
 * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 *::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
 *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+.view-root::-webkit-scrollbar-track, .messages-section::-webkit-scrollbar-track, .window-content::-webkit-scrollbar-track, .modal::-webkit-scrollbar-track { margin-block: 12px; }
 
 /* ---------- چیدمان کلی ---------- */
 .app-container { width: 100%; max-width: 1800px; height: 100%; display: flex; flex-direction: column; background-color: var(--app-container); transition: background-color .25s; }
@@ -374,14 +376,11 @@ html.dark .app-sidebar-link.active { background: var(--brand); }
 /* =====================================================================
    داشبورد: آمار و کارت‌های عملیات (حفظ ظاهر کارت‌های نمونه)
    ===================================================================== */
-.projects-section-line { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0 20px; flex-wrap: wrap; }
-.projects-status { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
-.item-status { display: flex; flex-direction: column; margin-inline-end: 18px; position: relative; }
-.item-status:not(:last-child) .status-type::after {
-  content: ""; position: absolute; inset-inline-end: -12px; top: 50%; transform: translateY(-50%);
-  width: 5px; height: 5px; border-radius: 50%; border: 1px solid var(--muted-color);
-}
-.status-number { font-size: 22px; line-height: 1.3; font-weight: 800; color: var(--main-color); }
+.projects-section-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 6px 0 20px; }
+.projects-status { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 12px; min-width: 0; }
+.item-status { display: flex; flex: 1 1 150px; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; min-height: 70px; margin: 0; padding: 10px 14px; position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-card); }
+.item-status:not(:last-child) .status-type::after { display: none; }
+.status-number { font-size: clamp(16px, 1.55vw, 22px); line-height: 1.3; font-weight: 800; color: var(--main-color); }
 .status-type { font-size: 11.5px; color: var(--muted-color); position: relative; }
 .view-actions { display: flex; align-items: center; gap: 4px; background: var(--surface-alt); padding: 4px; border-radius: 12px; }
 .view-btn { width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 9px; background: transparent; color: var(--main-color); font-size: 16px; }
@@ -491,6 +490,9 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
 .field-error { font-size: 11px; color: var(--danger); font-weight: 700; min-height: 0; }
 .input-wrap { position: relative; display: flex; align-items: center; }
 .input-wrap input { padding-inline-end: 42px; }
+.amount-wrap { direction: ltr; }
+.amount-wrap input { text-align: left; padding-left: 14px; padding-right: 52px; }
+.amount-wrap .input-suffix { right: 12px; left: auto; white-space: nowrap; }
 .input-wrap > .ic, .input-wrap > button { position: absolute; inset-inline-end: 10px; color: var(--muted-color); font-size: 15px; background: transparent; border: 0; width: 28px; height: 28px; display: grid; place-items: center; }
 .input-suffix { position: absolute; inset-inline-end: 12px; font-size: 11px; color: var(--muted-color); pointer-events: none; }
 .form-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
@@ -774,6 +776,8 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
   .profile-name { display: none; }
   .projects-section { border-radius: 22px; padding: 18px 14px 0; }
   .projects-section-header { flex-wrap: wrap; }
+  .projects-section-line { grid-template-columns: minmax(0, 1fr); }
+  .view-actions { justify-self: end; }
   .header-meta { width: 100%; justify-content: space-between; }
   .project-boxes.jsGridView .project-box-wrapper { width: 50%; }
   .form-grid, .grid-2, .grid-3, .info-grid { grid-template-columns: 1fr; }
@@ -799,8 +803,8 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
   .profile-btn img { width: 36px; height: 36px; }
   .project-boxes.jsGridView .project-box-wrapper { width: 100%; }
   .project-box { border-radius: 22px; }
-  .projects-status { width: 100%; justify-content: space-between; }
-  .item-status { margin-inline-end: 6px; }
+  .projects-status { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .item-status { min-height: 68px; padding: 9px 8px; }
   .item-status:not(:last-child) .status-type::after { display: none; }
   .status-number { font-size: 18px; }
   .status-type { font-size: 10px; }
