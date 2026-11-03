@@ -203,6 +203,7 @@ html.dark .search-wrapper { box-shadow: none; border: 1px solid var(--border); }
   position: relative; font-size: 19px; transition: background .2s, transform .2s;
 }
 .icon-btn:hover { background: var(--link-color-hover); }
+.icon-btn[aria-expanded="true"] { background: var(--brand-soft); color: var(--brand); }
 .icon-btn:active { transform: scale(.94); }
 .add-btn {
   width: var(--tap); height: var(--tap); border: 0; border-radius: 14px; flex: 0 0 auto;
@@ -303,6 +304,10 @@ html.dark .app-sidebar-link.active { background: var(--brand); }
   transition: transform .3s cubic-bezier(.19,1,.56,1), opacity .3s;
 }
 .messages-close { position: absolute; top: 14px; inset-inline-start: 14px; z-index: 3; border: 0; background: var(--surface-alt); color: var(--main-color); width: 36px; height: 36px; border-radius: 12px; display: none; place-items: center; }
+/* دسکتاپ: با دکمهٔ زنگولهٔ نوار بالا، پنل «اعلان‌ها و فعالیت‌ها» مخفی/نمایش داده می‌شود */
+@media screen and (min-width: 981px) {
+  .messages-section.panel-hidden { display: none; }
+}
 .side-header { padding: 26px 22px 8px; position: sticky; top: 0; background: var(--projects-section); z-index: 2; margin: 0; align-items: center; }
 .side-header p { font-size: 17px; font-weight: 800; margin: 0; }
 .text-btn { border: 0; background: transparent; color: var(--brand); font-size: 11.5px; font-weight: 700; padding: 6px; min-height: 36px; }
@@ -397,7 +402,8 @@ html.dark .view-btn.active { background: var(--brand); }
   height: 100%; display: flex; flex-direction: column; position: relative;
   transition: transform .2s, box-shadow .2s; color: #2a2733;
 }
-html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
+/* در تم تاریک متن روی کارت‌های پاستلی همچنان تیره می‌ماند تا خوانا باشد */
+html.dark .project-box { color: #2a2733; filter: saturate(.85) brightness(.88); }
 .project-box-wrapper:hover .project-box { transform: translateY(-3px); box-shadow: 0 16px 30px rgba(31,28,46,.14); }
 .project-box-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; min-height: 28px; }
 .op-tags { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; min-width: 0; }
@@ -405,9 +411,11 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
 .op-tag .ic { font-size: 10px; }
 .op-tag.solid { background: var(--card-accent); color: #fff; }
 .more-wrapper { position: relative; flex: 0 0 auto; }
+/* کارتی که منوی ⋯ آن باز است بالاتر از کارت‌های دیگر قرار می‌گیرد تا منو زیر کارت بعدی بریده نشود */
+.project-box-wrapper.menu-open { position: relative; z-index: 40; }
 .project-btn-more { width: 30px; height: 30px; border: 0; border-radius: 10px; background: rgba(255,255,255,.55); color: #2a2733; display: grid; place-items: center; font-size: 15px; }
 .project-btn-more:hover { background: #fff; }
-.more-menu { position: absolute; top: 34px; inset-inline-end: 0; width: 176px; z-index: 12; background: var(--more-list-bg); border-radius: 12px; box-shadow: var(--shadow-pop); padding: 6px; border: 1px solid var(--border); }
+.more-menu { position: absolute; top: calc(100% + 6px); inset-inline-end: 0; width: 176px; z-index: 12; background: var(--more-list-bg); border-radius: 12px; box-shadow: var(--shadow-pop); padding: 6px; border: 1px solid var(--border); }
 .more-menu button { width: 100%; min-height: 38px; border: 0; background: transparent; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--main-color); text-align: start; }
 .more-menu button:hover { background: var(--more-list-bg-hover); }
 .more-menu button > .ic { color: var(--brand); width: 15px; }
@@ -448,6 +456,8 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
 .project-boxes.jsListView .project-box-footer { order: 3; padding: 0; margin: 0; flex: 0 0 auto; }
 .project-boxes.jsListView .project-box-footer::after { display: none; }
 .project-boxes.jsListView .participants { display: none; }
+/* در نمای فهرستی، منوی سه‌نقطه دقیقاً زیر دکمهٔ همان کارت (سمت شروع نوشتار در RTL) باز می‌شود */
+.project-boxes.jsListView .more-menu { inset-inline-end: auto; inset-inline-start: 0; }
 
 /* نوار کارت پیشفرض و خلاصه داشبورد */
 .hero-strip { border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; color: #fff; background: linear-gradient(115deg, #2b2540, #4f3ff0 60%, #7a68ff); box-shadow: 0 16px 34px rgba(79,63,240,.24); }
@@ -649,7 +659,7 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
 .modal-foot .spacer { flex: 1; }
 
 /* پنجرهٔ شناور عملیات: بدون ترک صفحه، قابل جابجایی، کمینه و بیشینه */
-.window-root { position: fixed; inset: 0; z-index: 75; pointer-events: none; }
+.window-root { position: fixed; inset: 0; z-index: 75; pointer-events: none; display: flex; flex-wrap: wrap; align-content: flex-end; align-items: flex-end; gap: 10px; padding: 16px; }
 .operation-window { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(920px, calc(100vw - 32px)); height: min(780px, calc(100vh - 32px)); max-width: none; max-height: none; overflow: hidden; display: flex; flex-direction: column; background: var(--surface); color: var(--main-color); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 24px 80px rgba(16,24,40,.28); pointer-events: auto; }
 .window-titlebar { flex: 0 0 auto; min-height: 68px; padding: 10px 14px 10px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--border); background: var(--surface); cursor: move; touch-action: none; user-select: none; }
 .window-heading { display: flex; align-items: center; gap: 11px; min-width: 0; }
@@ -665,7 +675,8 @@ html.dark .project-box { color: #fff; filter: saturate(.85) brightness(.82); }
 .window-toolbar:empty { display: none; }
 .window-content { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 18px; }
 .operation-window.is-maximized { inset: 12px; top: 12px; left: 12px; transform: none; width: auto; height: auto; border-radius: 16px; }
-.operation-window.is-minimized { top: auto !important; left: auto !important; right: 16px !important; bottom: 16px !important; transform: none !important; width: min(380px, calc(100vw - 32px)); height: auto; max-height: none; border-radius: 16px; }
+/* پنجرهٔ کمینه‌شده به نوار پایین صفحه می‌رود؛ چند پنجرهٔ کمینه‌شده کنار هم قرار می‌گیرند */
+.operation-window.is-minimized { position: static; inset: auto; transform: none; width: min(320px, calc(100vw - 32px)); height: auto; max-height: none; border-radius: 16px; flex: 0 0 auto; cursor: pointer; }
 .operation-window.is-minimized .window-toolbar, .operation-window.is-minimized .window-content { display: none; }
 .window-dragging, .window-dragging * { user-select: none !important; cursor: grabbing !important; }
 .confirm-icon { width: 60px; height: 60px; border-radius: 20px; display: grid; place-items: center; font-size: 26px; margin: 0 auto 14px; background: var(--warning-soft); color: var(--warning); }
